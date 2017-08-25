@@ -1,79 +1,47 @@
-const fs = require('fs');
-const readline = require('readline');
+var express = require('express');
+var app = express();
+var path = require('path');
+var formidable = require('formidable');
+var fs = require('fs');
 
+app.use(express.static(path.join(__dirname, 'public')));
 
-var reader = readline.createInterface({
-  input: fs.createReadStream('new.srt'),
+app.get('/', function(req, res){
+  res.sendFile(path.join(__dirname, 'views/index.html'));
 });
 
-var lines = [];
+app.post('/upload', function(req, res){
 
-reader.on('line', (line) => {
-  lines.push(line);
+  // create an incoming form object
+  var form = new formidable.IncomingForm();
+
+  // specify that we want to allow the user to upload multiple files in a single request
+  form.multiples = true;
+
+  // store all uploads in the /uploads directory
+  form.uploadDir = path.join(__dirname, '/uploads');
+
+  // every time a file has been uploaded successfully,
+  // rename it to it's orignal name
+  form.on('file', function(field, file) {
+    fs.rename(file.path, path.join(form.uploadDir, file.name));
+  });
+
+  // log any errors that occur
+  form.on('error', function(err) {
+    console.log('An error has occured: \n' + err);
+  });
+
+  // once all the files have been uploaded, send a response to the client
+  form.on('end', function() {
+    res.end('success');
+  });
+
+  // parse the incoming request containing the form data
+  form.parse(req);
+
 });
 
-reader.on('close', () => {
-
-  var subs = parseSubs(lines);
-
-  subs.forEach( (lines)=> {
-    console.log(lines);
-  } );
-
-
-
+var server = app.listen(3000, function(){
+  console.log('Server listening on port 3000');
 });
-
-var parseSubs = (lines) =>{
-  var state = 'new';
-  var item = {};
-  var subs = [];
-
-  lines.forEach( (line) =>{
-
-    switch (state) {
-      case 'new':
-        item.id = line;
-        item.text = '';
-        state = 'time';
-      break;
-
-      case 'time':
-        var times = line.split(/\s+-+>\s+/);
-        item.start = parseTime(times[0]);
-        item.end = parseTime(times[1]);
-        state = 'text';
-      break;
-
-      case 'text':
-        if( line == null || line =='' || line == ' ' || line.length == 0 || line == undefined || line == 'null'){
-          subs.push(item);
-          item = {};
-          state = 'new';
-        }else{
-          item.text += line + '\r\n';
-        }
-      break;
-
-    }
-
-
-  } );
-  return subs;
-};
-
-var parseTime = (str) => {
-  var elems = str.replace(',','.').split(':').map(parseFloat);
-  return elems[0] * 3600 + elems[1] * 60 + elems[2];
-};
-
-var stringifyTime = (t) => {
-    var h = Math.floor(t/3600);
-    var m = Math.floor((t - h * 3600) / 60);
-    var s = (t - h * 3600 - m * 60).toFixed(3);
-    return [h,m,s].map(padz).join(':').replace('.',',');
-}
-
-var padz = (n) => {
-  return n >= 10 ? n : '0'+n;
-}
