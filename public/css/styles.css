@@ -23,6 +23,20 @@ body {
   border: none;
 }
 
+.download-btn {
+  margin-top: 20px;
+  color: #ffffff;
+  background-color: #0CB223;
+  border: none;
+}
+
+.download-btn-disable{
+  margin-top: 20px;
+  background-color: #5C5F5C;
+  border: none;
+
+}
+
 .upload-btn:hover,
 .upload-btn:focus,
 .upload-btn:active,
@@ -52,9 +66,9 @@ h2 {
   padding-bottom: 20px;
 }
 
-/*#upload-input {
+#upload-input {
   display: none;
-}*/
+}
 
 @media (min-width: 768px) {
   .main-container {

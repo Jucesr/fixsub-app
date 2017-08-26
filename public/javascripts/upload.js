@@ -1,3 +1,24 @@
+var fileUploaded = false;
+var secondsSet = false;
+
+$( document ).ready(function() {
+    $("#download-btn").prop( "disabled", true );
+});
+
+
+
+$('#seconds-input').on( 'change', function() {
+  var s = this.value;
+  if( !isNaN(s) && s!=''){
+    secondsSet = true;
+    console.log('Its a number');
+  }else {
+    secondsSet = false;
+    console.log('It is not a number');
+  }
+  checkDownloadButton();
+} );
+
 $('.upload-btn').on('click', function (){
     $('#upload-input').click();
     $('.progress-bar').text('0%');
@@ -29,6 +50,8 @@ $('#upload-input').on('change', function(){
       contentType: false,
       success: function(data){
           console.log('upload successful!\n' + data);
+          fileUploaded = true;
+          checkDownloadButton();
       },
       xhr: function() {
         // create an XMLHttpRequest
@@ -61,3 +84,14 @@ $('#upload-input').on('change', function(){
 
   }
 });
+
+
+var checkDownloadButton = () => {
+  if(secondsSet && fileUploaded){
+      $( "#download-btn" ).removeClass( "download-btn-disable" ).addClass( "download-btn" );
+      $("#download-btn").prop( "disabled", false );
+  }else{
+      $( "#download-btn" ).removeClass( "download-btn" ).addClass( "download-btn-disable" );
+      $("#download-btn").prop( "disabled", true );
+  }
+};

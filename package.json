@@ -5,7 +5,8 @@
   "main": "app.js",
   "dependencies": {
     "express": "^4.15.4",
-    "formidable": "^1.1.1"
+    "formidable": "^1.1.1",
+    "readline-sync": "^1.4.7"
   },
   "devDependencies": {},
   "scripts": {
@@ -20,8 +21,5 @@
   "bugs": {
     "url": "https://github.com/Jucesr/fixsub-app/issues"
   },
-  "homepage": "https://github.com/Jucesr/fixsub-app#readme",
-  "dependencies": {
-    "readline-sync": "^1.4.7"
-  }
+  "homepage": "https://github.com/Jucesr/fixsub-app#readme"
 }
