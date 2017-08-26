@@ -52,9 +52,9 @@ h2 {
   padding-bottom: 20px;
 }
 
-#upload-input {
+/*#upload-input {
   display: none;
-}
+}*/
 
 @media (min-width: 768px) {
   .main-container {
