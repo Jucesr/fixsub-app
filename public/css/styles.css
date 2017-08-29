@@ -18,6 +18,8 @@ body {
 }
 
 .upload-btn {
+
+  margin-top: 20px;
   color: #ffffff;
   background-color: #F89406;
   border: none;
@@ -30,7 +32,7 @@ body {
   border: none;
 }
 
-.download-btn-disable{
+.btn-disable{
   margin-top: 20px;
   background-color: #5C5F5C;
   border: none;

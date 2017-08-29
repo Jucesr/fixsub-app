@@ -3,6 +3,10 @@ var app = express();
 var path = require('path');
 var formidable = require('formidable');
 var fs = require('fs');
+var fixsub = require('./fix-sub/fix-sub.js');
+var mime = require('mime');
+
+var filename;
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -25,6 +29,7 @@ app.post('/upload', function(req, res){
   // rename it to it's orignal name
   form.on('file', function(field, file) {
     fs.rename(file.path, path.join(form.uploadDir, file.name));
+    filename = path.join(form.uploadDir, file.name);
   });
 
   // log any errors that occur
@@ -46,4 +51,27 @@ var server = app.listen(3000, function(){
   console.log('Server listening on port 3000');
 });
 
-module.exports = app; 
+app.get('/download', function(req, res){
+  //Get file uploaded and fix it.
+  debugger;
+  fixsub.fixIt(filename, parseFloat(req.query.sec)).then( () => {
+
+    var newfile = __dirname + '/new_subs.srt';
+
+    res.download(newfile, newfile, function(err){
+      if(err){
+        console.log(err);
+      }else {
+        res.end();
+      }
+
+    });
+
+  });
+
+});
+
+
+
+
+module.exports = app;

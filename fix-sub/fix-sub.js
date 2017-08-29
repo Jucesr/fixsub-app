@@ -1,25 +1,39 @@
 const fs = require('fs');
 const readline = require('readline');
-
-var reader = readline.createInterface({
-  input: fs.createReadStream('old_subs.srt'),
-});
-
 var lines = [];
+var inputFile;
+var reader;
 
-reader.on('line', (line) => {
-  lines.push(line);
-});
 
-reader.on('close', () => {
+var fixIt = (filename, seconds) =>{
+  return new Promise( (resolve, reject) =>{
 
-  var subs = parseSubs(lines);
-  addTime(subs, -2.0);
-  writeNewFile( subs, fs );
+    reader = readline.createInterface({
+      input: fs.createReadStream(filename)
+    });
 
-});
+    reader.on('line', (line) => {
+      lines.push(line);
+    });
 
-var writeNewFile = (subs, fs) => {
+    reader.on('close', () => {
+
+      var subs = parseSubs(lines);
+      debugger;
+      addTime(subs, seconds);
+      writeNewFile( subs );
+
+      resolve('It worked');
+
+    });
+
+  } );
+
+}
+
+
+
+var writeNewFile = (subs) => {
 
   file = fs.openSync('new_subs.srt', 'w+');
 
@@ -95,4 +109,8 @@ var stringifyTime = (t) => {
 
 var padz = (n) => {
   return n >= 10 ? n : '0'+n;
+}
+
+module.exports = {
+  fixIt
 }

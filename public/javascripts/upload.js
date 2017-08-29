@@ -11,18 +11,23 @@ $('#seconds-input').on( 'change', function() {
   var s = this.value;
   if( !isNaN(s) && s!=''){
     secondsSet = true;
-    console.log('Its a number');
   }else {
     secondsSet = false;
-    console.log('It is not a number');
   }
-  checkDownloadButton();
+  changeButtonState();
 } );
 
 $('.upload-btn').on('click', function (){
     $('#upload-input').click();
     $('.progress-bar').text('0%');
     $('.progress-bar').width('0%');
+});
+
+$('#download-btn').on('click', function() {
+  var sec = $('#seconds-input').val();
+
+  window.location = `/download?sec=${sec}`;
+
 });
 
 $('#upload-input').on('change', function(){
@@ -51,7 +56,7 @@ $('#upload-input').on('change', function(){
       success: function(data){
           console.log('upload successful!\n' + data);
           fileUploaded = true;
-          checkDownloadButton();
+          changeButtonState();
       },
       xhr: function() {
         // create an XMLHttpRequest
@@ -86,12 +91,18 @@ $('#upload-input').on('change', function(){
 });
 
 
-var checkDownloadButton = () => {
+var changeButtonState = () => {
   if(secondsSet && fileUploaded){
-      $( "#download-btn" ).removeClass( "download-btn-disable" ).addClass( "download-btn" );
-      $("#download-btn").prop( "disabled", false );
+    setButtonState('#download-btn', 'btn-disable', 'download-btn', true);
+    setButtonState('.upload-btn', '.upload-btn', 'btn-disable', false);
   }else{
-      $( "#download-btn" ).removeClass( "download-btn" ).addClass( "download-btn-disable" );
-      $("#download-btn").prop( "disabled", true );
+    setButtonState('#download-btn', 'download-btn', 'btn-disable', false);
+    setButtonState('.upload-btn', 'btn-disable', '.upload-btn', true);
+
   }
+};
+
+var setButtonState = (buttonName, oldButtonClass, newButtonClass, state) => {
+  $(buttonName).removeClass(oldButtonClass).addClass(newButtonClass);
+  $(buttonName).prop("disabled", !state);
 };
