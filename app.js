@@ -6,6 +6,8 @@ var fs = require('fs');
 var fixsub = require('./fix-sub/fix-sub.js');
 var mime = require('mime');
 
+const port = process.env.PORT || 3000;
+
 var filename;
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -84,8 +86,8 @@ app.get('/delete', function(req, res) {
 
 });
 
-var server = app.listen(3000, function(){
-  console.log('Server listening on port 3000');
+var server = app.listen(port, function(){
+  console.log(`Server listening on port ${port}`);
 });
 
 module.exports = app;
