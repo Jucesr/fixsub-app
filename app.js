@@ -47,31 +47,45 @@ app.post('/upload', function(req, res){
 
 });
 
-var server = app.listen(3000, function(){
-  console.log('Server listening on port 3000');
-});
-
 app.get('/download', function(req, res){
   //Get file uploaded and fix it.
-  debugger;
-  fixsub.fixIt(filename, parseFloat(req.query.sec)).then( () => {
-
-    var newfile = __dirname + '/new_subs.srt';
+  fixsub.fixIt(filename, parseFloat(req.query.sec)).then(
+    () => {
+    // success function
+    var newfile = fixsub.renameFile(filename, '_fixed');
 
     res.download(newfile, newfile, function(err){
       if(err){
         console.log(err);
       }else {
-        res.end();
+        //Delete file uploaded and new file
+        debugger;
+        fixsub.deleteFile( newfile );
+        fixsub.deleteFile( filename
+
+
+
+         );
       }
 
     });
 
-  });
+  }).catch( (errorMessage) => {
+    res.send(errorMessage);
+  } );
 
 });
 
+app.get('/delete', function(req, res) {
 
+  debugger;
+  let fn = req.query.filename;
+  fixsub.deleteFile(`uploads/${fn}`);
 
+});
+
+var server = app.listen(3000, function(){
+  console.log('Server listening on port 3000');
+});
 
 module.exports = app;

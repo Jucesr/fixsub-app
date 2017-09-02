@@ -18,12 +18,14 @@ var fixIt = (filename, seconds) =>{
 
     reader.on('close', () => {
 
-      var subs = parseSubs(lines);
-      debugger;
-      addTime(subs, seconds);
-      writeNewFile( subs );
+      try{
+        var subs = parseSubs(lines);
+        addTime(subs, seconds);
+        writeNewFile( filename, subs, resolve, reject );
+      }catch(e){
+        reject('There was an error parsing the file. Make sure it\'s an .srt file');
+      }
 
-      resolve('It worked');
 
     });
 
@@ -31,20 +33,48 @@ var fixIt = (filename, seconds) =>{
 
 }
 
+var writeNewFile = (filename, subs, resolve, reject) => {
 
+  fs.open( renameFile(filename, '_fixed') , 'w+', (error, file) => {
 
-var writeNewFile = (subs) => {
+    if(error){
 
-  file = fs.openSync('new_subs.srt', 'w+');
+    reject('There was an error openning the file.');
 
-  subs.forEach( (sub) => {
+    }else{
 
-    fs.appendFileSync(file, sub.id + '\r\n', 'utf8');
-    fs.appendFileSync(file, stringifyTime(sub.start) + ' --> ' + stringifyTime(sub.end) + '\r\n', 'utf8');
-    fs.appendFileSync(file, sub.text + '\r\n', 'utf8');
-  } );
+      var stringToWrite = "";
+      subs.forEach( (sub) => {
 
-  fs.closeSync(file);
+        stringToWrite += sub.id + '\r\n' + stringifyTime(sub.start) + ' --> ' + stringifyTime(sub.end) + '\r\n' + sub.text + '\r\n';
+
+      });
+
+      fs.appendFile( file, stringToWrite, (error) =>{
+
+        if(error){
+
+          reject('There was an error appending information to the file.');
+
+        }else{
+
+          fs.close(file, (error) =>{
+
+            if(error){
+
+              reject('There was an error closing the file.');
+
+            }else{
+
+              resolve();
+
+            }
+          });
+        }
+      });
+    }
+
+    });
 
 };
 
@@ -111,6 +141,21 @@ var padz = (n) => {
   return n >= 10 ? n : '0'+n;
 }
 
+var renameFile = ( filename, addition ) => {
+
+  var parts = filename.split('.');
+  return newFileName = parts[0] + addition + '.' + parts[1];
+
+};
+
+var deleteFile = ( filename ) => {
+
+    fs.unlink( filename);
+
+};
+
 module.exports = {
-  fixIt
+  fixIt,
+  renameFile,
+  deleteFile
 }
